@@ -4,24 +4,65 @@ int cmph(const void *a, const void *b, int (*cmp)(const void *, const void *)) {
 	return cmp(a, b);
 }
 
-void qsort_s(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
-	if (n < 2) return;
-	size_t i = n / 2;
-	size_t up = n - 1;
-	size_t low = 0;
-	while (1) {
-		while (low < i && cmp(&base[size * low], &base[size * i], context) <= 0) low++;
-		while (up > i && cmp(&base[size * up], &base[size * i], context) >= 0) up--;
-		if (up == low) break;
-		if (low == i) i = up;
-		else if (up == i) i = low;
-		char tmp[size];
-		memcpy(tmp, &base[size * low], size);
-		memcpy(&base[size * low], &base[size * up], size);
-		memcpy(&base[size * up], tmp, size);
+size_t getPivotIndex(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
+	if (cmp(base,base + (n - 1) * size, context) < 0) {
+		if (cmp(base,base + n / 2 * size, context) < 0) {
+			if (cmp(base + n / 2 * size,base + (n - 1) * size, context) < 0) return n / 2;
+			else return n - 1;
+		}
+	} else {
+		if (cmp(base,base + n / 2 * size, context) > 0) {
+			if (cmp(base + n / 2 * size,base + (n - 1) * size, context) < 0) return n - 1;
+			else return n / 2;
+		}
 	}
-	qsort_s(base, i, size, cmp, context);
-	qsort_s(&base[size * (i + 1)], n - i - 1, size, cmp, context);
+	return 0;
+}
+
+void swap(void *base, size_t size, size_t i, size_t j) {
+	if (i == j) return;
+	char tmp[size];
+	memcpy(tmp, base + (size * i), size);
+	memcpy(base + (size * i), base + (size * j), size);
+	memcpy(base + (size * j), tmp, size);
+}
+
+void qsort_s(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
+	size_t count = n;
+	size_t largestPivotIndex = 0;
+	while (n > 2) {
+		size_t pivotIndex = getPivotIndex(base, count, size, cmp, context);
+		swap(base, size, 0, pivotIndex);
+		size_t i = 1;
+		size_t j = count - 1;
+		while (i < j) {
+			while (i < j && cmp(base + (i * size), base, context) <= 0) i++;
+			while (i < j && cmp(base + (j * size), base, context) > 0) j--;
+			swap(base, size, i, j);
+		}
+		if (count == 1) pivotIndex = 0;
+		else if (cmp(base + (i * size), base, context) <= 0) pivotIndex = i;
+		else pivotIndex = i - 1;
+		swap(base, size, 0, pivotIndex);
+
+		if (count < n) swap(base, size, pivotIndex + 1, count);
+		else largestPivotIndex = pivotIndex;
+		count = pivotIndex;
+		while (count <= 2 && n > 2) {
+			if (count == 2 && cmp(base, base + size, context) > 0) swap(base, size, 0, 1);
+			base += size * (count + 1);
+			n -= count + 1;
+			largestPivotIndex -= count + 1;
+			if (largestPivotIndex) {
+				for (count = 0; (cmp(base, base + ((count + 1) * size), context) >= 0) && (count + 1 < n) && (count + 1 < largestPivotIndex); count++) ;
+				swap(base, size, 0, count);
+			} else {
+				base += size;
+				count = --n;
+			}
+		}
+	}
+	if (n == 2 && cmp(base, base + size, context) > 0) swap(base, size, 0, 1);
 }
 
 void *bsearch_s(const void *key, const void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
