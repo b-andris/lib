@@ -1,10 +1,10 @@
 #include <string.h>
 
-static int cmph(const void *a, const void *b, int (*cmp)(const void *, const void *)) {
+static int cmph(const void* a, const void* b, int (*cmp)(const void*, const void*)) {
 	return cmp(a, b);
 }
 
-static size_t getPivotIndex(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
+static size_t getPivotIndex(void* base, size_t n, size_t size, int (*cmp)(const void*, const void*, void*), void* context) {
 	if (cmp(base,base + (n - 1) * size, context) < 0) {
 		if (cmp(base,base + n / 2 * size, context) < 0) {
 			if (cmp(base + n / 2 * size,base + (n - 1) * size, context) < 0) return n / 2;
@@ -19,7 +19,7 @@ static size_t getPivotIndex(void *base, size_t n, size_t size, int (*cmp)(const 
 	return 0;
 }
 
-static void swap(void *base, size_t size, size_t i, size_t j) {
+static void swap(void* base, size_t size, size_t i, size_t j) {
 	if (i == j) return;
 	char tmp[size];
 	memcpy(tmp, base + (size * i), size);
@@ -27,7 +27,7 @@ static void swap(void *base, size_t size, size_t i, size_t j) {
 	memcpy(base + (size * j), tmp, size);
 }
 
-void qsort_s(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
+void qsort_s(void* base, size_t n, size_t size, int (*cmp)(const void*, const void*, void*), void* context) {
 	size_t count = n;
 	size_t largestPivotIndex = 0;
 	while (n > 2) {
@@ -65,7 +65,7 @@ void qsort_s(void *base, size_t n, size_t size, int (*cmp)(const void *, const v
 	if (n == 2 && cmp(base, base + size, context) > 0) swap(base, size, 0, 1);
 }
 
-void *bsearch_s(const void *key, const void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
+void* bsearch_s(const void* key, const void* base, size_t n, size_t size, int (*cmp)(const void*, const void*, void*), void* context) {
 	if (!n) return NULL;
 	size_t min = 0;
 	size_t max = n - 1;
@@ -85,10 +85,10 @@ void *bsearch_s(const void *key, const void *base, size_t n, size_t size, int (*
 	}
 }
 
-void qsort(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *)) {
-	qsort_s(base, n, size, (int (*)(const void *, const void *, void *))cmph, cmp);
+void qsort(void* base, size_t n, size_t size, int (*cmp)(const void*, const void*)) {
+	qsort_s(base, n, size, (int (*)(const void*, const void*, void*))cmph, cmp);
 }
 
-void *bsearch(const void *key, const void *base, size_t n, size_t size, int (*cmp)(const void *, const void *)) {
-	return bsearch_s(key, base, n, size, (int (*)(const void *, const void *, void *))cmph, cmp);
+void* bsearch(const void* key, const void* base, size_t n, size_t size, int (*cmp)(const void*, const void*)) {
+	return bsearch_s(key, base, n, size, (int (*)(const void*, const void*, void*))cmph, cmp);
 }
