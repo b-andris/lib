@@ -71,7 +71,7 @@ void *bsearch_s(const void *key, const void *base, size_t n, size_t size, int (*
 	size_t max = n - 1;
 	size_t i = (min + max) / 2;
 	while (1) {
-		int r = cmp(&base[size * i], key, context);
+		int r = cmp(base + (size * i), key, context);
 		if (r && min + 1 >= max) return NULL;
 		if (r < 0) {
 			min = i;
@@ -80,7 +80,7 @@ void *bsearch_s(const void *key, const void *base, size_t n, size_t size, int (*
 			max = i;
 			i = (min + max) / 2;
 		} else {
-			return (void*)&base[size * i];
+			return base + (size * i);
 		}
 	}
 }
