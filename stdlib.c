@@ -80,7 +80,7 @@ void *bsearch_s(const void *key, const void *base, size_t n, size_t size, int (*
 			max = i;
 			i = (min + max) / 2;
 		} else {
-			return base + (size * i);
+			return (void*)base + (size * i);
 		}
 	}
 }
