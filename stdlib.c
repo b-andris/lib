@@ -1,10 +1,10 @@
 #include <string.h>
 
-int cmph(const void *a, const void *b, int (*cmp)(const void *, const void *)) {
+static int cmph(const void *a, const void *b, int (*cmp)(const void *, const void *)) {
 	return cmp(a, b);
 }
 
-size_t getPivotIndex(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
+static size_t getPivotIndex(void *base, size_t n, size_t size, int (*cmp)(const void *, const void *, void *), void *context) {
 	if (cmp(base,base + (n - 1) * size, context) < 0) {
 		if (cmp(base,base + n / 2 * size, context) < 0) {
 			if (cmp(base + n / 2 * size,base + (n - 1) * size, context) < 0) return n / 2;
@@ -19,7 +19,7 @@ size_t getPivotIndex(void *base, size_t n, size_t size, int (*cmp)(const void *,
 	return 0;
 }
 
-void swap(void *base, size_t size, size_t i, size_t j) {
+static void swap(void *base, size_t size, size_t i, size_t j) {
 	if (i == j) return;
 	char tmp[size];
 	memcpy(tmp, base + (size * i), size);
