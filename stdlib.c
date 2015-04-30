@@ -5,7 +5,7 @@ static int cmph(const void* a, const void* b, int (*cmp)(const void*, const void
 	return cmp(a, b);
 }
 
-static size_t getPivotIndex(void* base, size_t n, size_t size, int (*cmp)(const void*, const void*, void*), void* context) {
+static size_t pivot(void* base, size_t n, size_t size, int (*cmp)(const void*, const void*, void*), void* context) {
 	int8_t* data = base;
 	if (cmp(data,data + (n - 1) * size, context) < 0) {
 		if (cmp(data,data + n / 2 * size, context) < 0) {
@@ -35,7 +35,7 @@ void qsort_s(void* base, size_t n, size_t size, int (*cmp)(const void*, const vo
 	size_t count = n;
 	size_t largestPivotIndex = 0;
 	while (n > 2) {
-		size_t pivotIndex = getPivotIndex(data, count, size, cmp, context);
+		size_t pivotIndex = pivot(data, count, size, cmp, context);
 		swap(data, size, 0, pivotIndex);
 		size_t i = 1;
 		size_t j = count - 1;
