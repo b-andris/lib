@@ -56,9 +56,14 @@ void qsort_s(void* base, size_t n, size_t size, int (*cmp)(const void*, const vo
 			if (count == 2 && cmp(data, data + size, context) > 0) swap(data, size, 0, 1);
 			data += size * (count + 1);
 			n -= count + 1;
+			if (largestPivotIndex == count) {
+				largestPivotIndex = 0;
+				count = n;
+				continue;
+			}
 			largestPivotIndex -= count + 1;
 			if (largestPivotIndex) {
-				for (count = 0; (cmp(data, data + ((count + 1) * size), context) >= 0) && (count + 1 < n) && (count + 1 < largestPivotIndex); count++) ;
+				for (count = 0; (cmp(data, data + ((count + 1) * size), context) >= 0) && (count + 1 < n) && (count < largestPivotIndex); count++) ;
 				swap(data, size, 0, count);
 			} else {
 				data += size;
