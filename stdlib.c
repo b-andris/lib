@@ -24,7 +24,7 @@ static size_t pivot(void* base, size_t n, size_t size, int (*cmp)(const void*, c
 static void swap(void* base, size_t size, size_t i, size_t j) {
 	int8_t* data = base;
 	if (i == j) return;
-	char tmp[size];
+	int8_t tmp[size];
 	memcpy(tmp, data + (size * i), size);
 	memcpy(data + (size * i), data + (size * j), size);
 	memcpy(data + (size * j), tmp, size);
